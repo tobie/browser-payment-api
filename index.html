@@ -204,7 +204,6 @@
           Promise&lt;void&gt; abort();
           Promise&lt;boolean&gt; canMakePayment();
 
-          readonly attribute DOMString? paymentRequestId;
           readonly attribute PaymentAddress? shippingAddress;
           readonly attribute DOMString? shippingOption;
           readonly attribute PaymentShippingType? shippingType;
@@ -301,6 +300,7 @@
           </p>
           <pre class="example" title="The 'details' argument">
             const details = {
+              paymentRequestID: "1234567890123",
               displayItems: [
                 {
                   label: "Sub-total",
@@ -333,9 +333,6 @@
           The <a>PaymentRequest</a> constructor MUST act as follows:
         </p>
         <ol data-link-for="PaymentDetails" class="algorithm">
-          <li>If a <code>paymentRequestId</code> was not provided during
-          construction, generate a <code>paymentRequestId</code>.
-          </li>
           <li>If the <a>current settings object</a>'s <a data-cite=
           "!html5#responsible-document">responsible document</a> is not
           <a>allowed to use</a> the feature indicated by attribute name
@@ -460,6 +457,9 @@
             </ol>
           </li>
           <li>Let <var>serializedModifierData</var> be an empty list.
+          <li>If <var>details.paymentRequestID</var> was not provided during
+          construction, populate the field with an [[RFC4122]] UUID.
+          </li>
           </li>
           <li data-link-for="PaymentDetails">Process payment details modifiers:
             <ol>
@@ -1014,6 +1014,7 @@
       </h2>
       <pre class="idl">
         dictionary PaymentDetails {
+          DOMString paymentRequestID;
           PaymentItem total;
           sequence&lt;PaymentItem&gt; displayItems;
           sequence&lt;PaymentShippingOption&gt; shippingOptions;
@@ -1032,6 +1033,17 @@
         The following fields are part of the <a>PaymentDetails</a> dictionary:
       </p>
       <dl>
+        <dt>
+          <dfn>paymentRequestID</dfn>
+        </dt>
+        <dd>
+          <code>paymentRequestID</code> is a freeform identifier for this
+          payment request. This field is intended to hold a unique
+          identifier for the purposes of recovering from failures and/or as a
+          foreign key into other systems. If a <code>paymentRequestID</code>
+          is not provided by the client then a UUID will be generated and stored
+          instead.
+        </dd>
         <dt>
           <dfn>total</dfn>
         </dt>
@@ -1563,7 +1575,6 @@
         interface PaymentResponse {
           serializer = { attribute };
 
-          readonly attribute DOMString paymentRequestId;
           readonly attribute DOMString methodName;
           readonly attribute object details;
           readonly attribute PaymentAddress? shippingAddress;
@@ -1588,13 +1599,6 @@
           Each attribute is <a data-cite=
           "WEBIDL-LS#dfn-convert-to-serialized-value">converted to serialized
           values</a> as per [[!WEBIDL-LS]].
-        </dd>
-        <dt>
-          <dfn>paymentRequestId</dfn>
-        </dt>
-        <dd>
-          The same <a>paymentRequestId</a> present in the original
-          <a>PaymentRequest</a>.
         </dd>
         <dt>
           <dfn>methodName</dfn>

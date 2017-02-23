@@ -1087,10 +1087,10 @@
         <dd>
           This <a>PaymentItem</a> contains the total amount of the payment
           request.
-          <p>
-            <code>total</code> MUST be a non-negative value. This means that
-            the <code>total.amount.value</code> field MUST NOT begin with a
-            U+002D HYPHEN-MINUS character.
+          <p class="note">
+            The <a>total</a>.<a data-lt=
+            "PaymentItem.amount">amount</a>.<a data-lt=
+            "PaymentCurrencyAmount.value">value</a> can't be a negative number.
           </p>
         </dd>
         <dt>
